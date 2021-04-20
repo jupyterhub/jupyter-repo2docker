@@ -325,9 +325,9 @@ class CondaBuildPack(BaseImage):
                     "${NB_USER}",
                     r"""
                 TIMEFORMAT='time: %3R' \
-                bash -c 'time mamba env update -p {0} -f "{1}" && \
-                time mamba clean --all -f -y && \
-                mamba list -p {0} \
+                bash -c 'time /tmp/bin/micromamba install -p {0} -f "{1}" -c conda-forge && \
+                # time /tmp/bin/micromamba clean --all -y && \
+                /tmp/bin/micromamba list -p {0} \
                 '
                 """.format(
                         env_prefix, environment_yml
@@ -344,9 +344,9 @@ class CondaBuildPack(BaseImage):
                 (
                     "${NB_USER}",
                     r"""
-                mamba install -p {0} r-base{1} r-irkernel={2} r-devtools -y && \
-                mamba clean --all -f -y && \
-                mamba list -p {0}
+                /tmp/bin/micromamba install -p {0} r-base{1} r-irkernel={2} r-devtools -y -c conda-forge && \
+                #  /tmp/bin/micromamba clean --all -f -y && \
+                /tmp/bin/micromamba list -p {0}
                 """.format(
                         env_prefix, r_pin, IRKERNEL_VERSION
                     ),

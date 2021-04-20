@@ -1,5 +1,5 @@
 #!/bin/bash
 # install pytest with conda in the default env (should be $KERNEL_PYTHON_PREFIX)
-conda install -yq pytest
+/tmp/bin/micromamba install -yq pytest -p $KERNEL_PYTHON_PREFIX -c conda-forge
 # install there with pip (should be the same)
 pip install there
