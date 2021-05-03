@@ -110,8 +110,8 @@ class CondaBuildPack(BaseImage):
                 "root",
                 r"""
                 TIMEFORMAT='time: %3R' \
-                bash -c 'time /tmp/install-miniforge.bash' && \
-                rm -rf /tmp/install-miniforge.bash /tmp/env
+                bash -c 'time /tmp/install-micromamba.bash' && \
+                rm /tmp/install-micromamba.bash /tmp/environment.yml
                 """,
             )
         ]
@@ -134,7 +134,7 @@ class CondaBuildPack(BaseImage):
 
         """
         files = {
-            "conda/install-miniforge.bash": "/tmp/install-miniforge.bash",
+            "conda/install-micromamba.bash": "/tmp/install-micromamba.bash",
             "conda/activate-conda.sh": "/etc/profile.d/activate-conda.sh",
         }
         py_version = self.python_version
