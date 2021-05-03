@@ -93,7 +93,7 @@ class CondaBuildPack(BaseImage):
 
         All scripts here should be independent of contents of the repository.
 
-        This sets up through `install-miniforge.bash` (found in this directory):
+        This sets up through `install-micromamba.bash` (found in this directory):
 
         - a directory for the conda environment and its ownership by the
           notebook user

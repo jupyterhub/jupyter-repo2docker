@@ -1,5 +1,5 @@
 #!/bin/bash
-# This downloads and installs a pinned version of miniforge
+# This downloads and installs a pinned version of micromamba
 # and sets up the base environment
 set -ex
 
@@ -15,13 +15,14 @@ unset HOME
 mkdir -p ${CONDA_DIR}
 
 time wget -qO- ${URL} | tar -xvj bin/micromamba
+
 export MAMBA_ROOT_PREFIX=${CONDA_DIR}
+export MAMBA_EXE="/tmp/bin/micromamba"
+
 eval "$(./bin/micromamba shell hook -p ${CONDA_DIR} -s posix)"
 ./bin/micromamba shell init -s bash -p ${CONDA_DIR}
-# source ~/.bashrc
 
 micromamba activate
-# micromamba install conda -n base -c conda-forge
 
 export PATH="${PWD}/bin:$PATH"
 
@@ -69,7 +70,7 @@ fi
 # Clean things out!
 time micromamba clean --all -y
 
-# Remove the pip cache created as part of installing miniforge
+# Remove the pip cache created as part of installing micromamba
 rm -rf /root/.cache
 
 chown -R $NB_USER:$NB_USER ${CONDA_DIR}
