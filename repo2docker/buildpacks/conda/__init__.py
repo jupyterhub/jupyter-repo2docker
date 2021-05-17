@@ -52,6 +52,7 @@ class CondaBuildPack(BaseImage):
             ("CONDA_DIR", "${APP_BASE}/conda"),
             ("NB_PYTHON_PREFIX", "${CONDA_DIR}/envs/notebook"),
             ("NB_ENVIRONMENT_FILE", self._nb_environment_file),
+            ("MAMBA_ROOT_PREFIX", "${CONDA_DIR}"),
         ]
         if self._nb_requirements_file:
             env.append(("NB_REQUIREMENTS_FILE", self._nb_requirements_file))
