@@ -327,7 +327,7 @@ class CondaBuildPack(BaseImage):
                     "${NB_USER}",
                     r"""
                 TIMEFORMAT='time: %3R' \
-                bash -c 'time /tmp/bin/micromamba install -p {0} -f "{1}" && \
+                bash -c 'time /tmp/bin/micromamba env update -p {0} -f "{1}" && \
                 # time /tmp/bin/micromamba clean --all -y && \
                 /tmp/bin/micromamba list -p {0} \
                 '
