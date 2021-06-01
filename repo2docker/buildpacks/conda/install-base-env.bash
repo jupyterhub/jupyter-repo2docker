@@ -33,7 +33,7 @@ channels:
 auto_update_conda: false
 show_channel_urls: true
 update_dependencies: false
-channel_priority: flexible
+channel_priority: strict
 EOT
 
 echo "installing notebook env:"
