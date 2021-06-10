@@ -37,6 +37,7 @@ from .buildpacks import (
     PipfileBuildPack,
     PythonBuildPack,
     RBuildPack,
+    GuixBuildPack,
 )
 from . import contentproviders
 from .utils import ByteSpecification, chdir
@@ -95,6 +96,7 @@ class Repo2Docker(Application):
             JuliaProjectTomlBuildPack,
             JuliaRequireBuildPack,
             NixBuildPack,
+            GuixBuildPack,
             RBuildPack,
             CondaBuildPack,
             PipfileBuildPack,

@@ -231,6 +231,27 @@ to produce a reproducible environment.
 To see an example repository visit
 `nix binder example <https://github.com/binder-examples/nix>`_.
 
+.. _manifest.scm:
+
+``manifest.scm`` - the Guix package manager
+===========================================
+
+Specify packages to be installed by the `Guix package manager <https://guix.gnu.org/>`_.
+All packages specified in |manifest|_ will be installed in a container using |guix_package|_. In addition, you can use different `channels <https://guix.gnu.org/manual/en/html_node/Channels.html>`_ rather
+than the ones available by default (official channels of GNU Guix 1.3.0).
+You must describe such channels in a ``channels.scm`` file which will be used
+alongside ``manifest.scm`` with the |guix_time-machine|_ command. Furthermore, using a ``channels.scm`` file lets you `pin a specific revision <https://guix.gnu.org/manual/en/html_node/Replicating-Guix.html>`_ of Guix, allowing you to unambiguously specific the software environment to reproduce.
+
+For more information about Guix please read the `manual <https://guix.gnu.org/manual/en/guix.html>`_.
+
+.. |manifest| replace:: ``manifest.scm``
+.. _manifest: https://guix.gnu.org/manual/en/html_node/Invoking-guix-package.html#index-profile-manifesthy
+
+.. |guix_package| replace:: ``guix package``
+.. _guix_package: https://guix.gnu.org/manual/en/html_node/Invoking-guix-package.html#Invoking-guix-package
+
+.. |guix_time-machine| replace:: ``guix time-machine``
+.. _guix_time-machine: https://guix.gnu.org/manual/en/html_node/Invoking-guix-time_002dmachine.html
 
 ``Dockerfile`` - Advanced environments
 ======================================
