@@ -113,6 +113,16 @@ def get_argparser():
     )
 
     argparser.add_argument(
+        "--reuse-image",
+        dest="reuse_image",
+        action="store_true",
+        help=(
+            "Runs a container with refreshed repo contents without "
+            "building a new image if one exists."
+        ),
+    )
+
+    argparser.add_argument(
         "--build-memory-limit",
         help="Total Memory that can be used by the docker build process",
     )
@@ -274,12 +284,18 @@ def make_r2d(argv=None):
 
     r2d.dry_run = not args.build
 
+    r2d.reuse_image = args.reuse_image
+
     if r2d.dry_run:
         # Can't push nor run if we aren't building
         args.run = False
         args.push = False
+        args.reuse_image = False
 
     r2d.run = args.run
+    if not r2d.run:
+        args.reuse_image = False
+
     r2d.push = args.push
 
     # check against r2d.run and not args.run as r2d.run is false on

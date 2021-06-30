@@ -39,7 +39,7 @@ from .buildpacks import (
     RBuildPack,
 )
 from . import contentproviders
-from .utils import ByteSpecification, chdir
+from .utils import ByteSpecification, chdir, archive_repo
 
 
 class Repo2Docker(Application):
@@ -328,6 +328,14 @@ class Repo2Docker(Application):
         config=True,
     )
 
+    reuse_image = Bool(
+        False,
+        help="""
+        Copies new contents to existing image.
+        """,
+        config=True,
+    )
+
     # FIXME: Refactor classes to separate build & run steps
     run_cmd = List(
         [],
@@ -590,6 +598,24 @@ class Repo2Docker(Application):
 
         container = client.containers.run(self.output_image_spec, **run_kwargs)
 
+        # copies the new contents of the image into container
+        if self.reuse_image:
+            image_workdir = container.image.attrs["Config"]["WorkingDir"]
+
+            # local path to repo clone
+            repo_path = os.path.abspath(self.git_workdir) + "/"
+            repo_archive = archive_repo(repo_path)
+
+            # delete old container contents
+            cmd = "sh -c 'rm -rf {}/*'".format(image_workdir)
+            container.exec_run(cmd, stderr=True, stdout=True)
+
+            copied = container.put_archive(image_workdir, repo_archive)
+            shutil.rmtree(self.git_workdir, ignore_errors=True)
+            if not copied:
+                self.log.error("Failed to copy repo contents into container")
+                return container
+
         while container.status == "created":
             time.sleep(0.5)
             container.reload()
@@ -639,17 +665,25 @@ class Repo2Docker(Application):
         s.close()
         return port
 
-    def find_image(self):
+    def find_image(self, allow_revision=False):
         # if this is a dry run it is Ok for dockerd to be unreachable so we
         # always return False for dry runs.
         if self.dry_run:
             return False
         # check if we already have an image for this content
         client = docker.APIClient(version="auto", **kwargs_from_env())
+        # looking for partial match without commit tag
+        repo_image_name = self.output_image_spec[:-7]
+
         for image in client.images():
             if image["RepoTags"] is not None:
                 for tag in image["RepoTags"]:
-                    if tag == self.output_image_spec + ":latest":
+
+                    if allow_revision and repo_image_name in tag:
+                        self.output_image_spec = tag
+                        return True
+
+                    elif tag == self.output_image_spec + ":latest":
                         return True
         return False
 
@@ -675,16 +709,24 @@ class Repo2Docker(Application):
         # expensive to copy.
         if os.path.isdir(self.repo):
             checkout_path = self.repo
+            self.git_workdir = self.repo
         else:
             if self.git_workdir is None:
+
                 checkout_path = tempfile.mkdtemp(prefix="repo2docker")
+                self.git_workdir = checkout_path
             else:
                 checkout_path = self.git_workdir
 
         try:
             self.fetch(self.repo, self.ref, checkout_path)
 
-            if self.find_image():
+            revision = self.reuse_image
+            if revision:
+                # repo contents will be cleaned up in run phase
+                self.cleanup_checkout = False
+
+            if self.find_image(revision):
                 self.log.info(
                     "Reusing existing image ({}), not "
                     "building.".format(self.output_image_spec)
