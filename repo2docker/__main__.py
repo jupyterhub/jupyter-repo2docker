@@ -308,7 +308,7 @@ def make_r2d(argv=None):
         )
         sys.exit(1)
 
-    if args.ports and not r2d.run_cmd:
+    if args.ports and len(args.ports) > 1 and not r2d.run_cmd:
         print(
             "To publish user defined port mapping, user must specify "
             "the command to run in the container"

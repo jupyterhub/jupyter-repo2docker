@@ -3,7 +3,6 @@ Test argument parsing and r2d construction
 """
 import os
 import pytest
-import logging
 from repo2docker.__main__ import make_r2d
 from repo2docker import __version__
 
@@ -70,10 +69,6 @@ def test_run_required():
     # Can't publish any ports without running
     with pytest.raises(SystemExit):
         make_r2d(["--no-run", "-p", "8000:8000", "."])
-
-    # Can't publish any ports while running if we don't specify a command explicitly
-    with pytest.raises(SystemExit):
-        make_r2d(["-p", "8000:8000", "."])
 
 
 def test_clean():

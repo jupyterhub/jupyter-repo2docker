@@ -13,6 +13,7 @@ import docker
 import pytest
 
 from repo2docker.app import Repo2Docker
+from repo2docker.__main__ import make_r2d
 
 
 def read_port_mapping_response(
@@ -95,7 +96,7 @@ def read_port_mapping_response(
         else:
             break
     else:
-        pytest.fail("Never succeded in talking to %s" % url)
+        pytest.fail("Never succeeded in talking to %s" % url)
     assert "Directory listing" in r.text
 
 
@@ -113,3 +114,16 @@ def test_port_mapping(request, tmpdir, host, protocol):
     """Test a port mapping"""
     port = str(random.randint(50000, 51000))
     read_port_mapping_response(request, tmpdir, host=host, port=port, protocol=protocol)
+
+
+@pytest.mark.parametrize(
+    "port_str, port_dict",
+    [
+        ("8000", {"8000/tcp": "8000"}),
+        ("8000:9000", {"9000/tcp": "8000"}),
+        ("127.0.0.1:8000:9000", {"9000/tcp": ("127.0.0.1", "8000")}),
+    ],
+)
+def test_port_args(port_str, port_dict):
+    app = make_r2d(["-p", port_str, "."])
+    assert app.ports == port_dict

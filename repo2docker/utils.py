@@ -123,10 +123,10 @@ def validate_and_generate_port_mapping(port_mappings):
             raise ValueError(
                 'Port specification "{}" has ' "an invalid port.".format(mapping)
             )
-        if p > 65535:
+        if not 0 < p <= 65535:
             raise ValueError(
                 'Port specification "{}" specifies '
-                "a port above 65535.".format(mapping)
+                "a port outside 1-65535.".format(mapping)
             )
         return port
 
@@ -152,7 +152,12 @@ def validate_and_generate_port_mapping(port_mappings):
         return ports
 
     for mapping in port_mappings:
-        parts = mapping.split(":")
+        if ":" in mapping:
+            parts = mapping.split(":")
+        else:
+            # single port '8888' specified,
+            # treat as '8888:8888'
+            parts = [mapping, mapping]
 
         *host, container_port = parts
         # just a port
