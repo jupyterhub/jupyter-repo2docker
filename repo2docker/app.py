@@ -29,6 +29,7 @@ from traitlets.config import Application
 from . import __version__
 from .buildpacks import (
     CondaBuildPack,
+    TarballBuildPack,
     DockerBuildPack,
     JuliaProjectTomlBuildPack,
     JuliaRequireBuildPack,
@@ -90,6 +91,7 @@ class Repo2Docker(Application):
 
     buildpacks = List(
         [
+            TarballBuildPack,
             LegacyBinderDockerBuildPack,
             DockerBuildPack,
             JuliaProjectTomlBuildPack,
@@ -382,6 +384,16 @@ class Repo2Docker(Application):
         config=True,
     )
 
+    save = Bool(
+        False,
+        config=True,
+        help="""
+        Save the image to a tarball after the build and before running.
+
+        The used filename is 'image.tar' in the binder directory.
+        """,
+    )
+
     def fetch(self, url, ref, checkout_path):
         """Fetch the contents of `url` and place it in `checkout_path`.
 
@@ -444,6 +456,11 @@ class Repo2Docker(Application):
             extra=dict(phase="failed"),
         )
 
+    def docker_client(self):
+        """Single place to create Docker API client to allow mocking"""
+        client = docker.APIClient(version="auto", **kwargs_from_env())
+        return client
+
     def initialize(self):
         """Init repo2docker configuration before start"""
         # FIXME: Remove this function, move it to setters / traitlet reactors
@@ -474,7 +491,7 @@ class Repo2Docker(Application):
 
     def push_image(self):
         """Push docker image to registry"""
-        client = docker.APIClient(version="auto", **kwargs_from_env())
+        client = self.docker_client()
         # Build a progress setup for each layer, and only emit per-layer
         # info every 1.5s
         progress_layers = {}
@@ -514,6 +531,21 @@ class Repo2Docker(Application):
             "Successfully pushed {}".format(self.output_image_spec),
             extra=dict(phase="pushing"),
         )
+
+    def save_image(self):
+        """Save Docker image to file"""
+        client = self.docker_client()
+
+        with chdir(self.repo):
+            filename = self.default_buildpack().binder_path("image.tar")
+            self.log.info("Saving image to file {}\n".format(filename))
+
+            image = client.get_image(self.output_image_spec)
+            with open(filename, "wb") as f:
+                for chunk in image:
+                    f.write(chunk)
+
+        self.log.info("Successfully saved image\n")
 
     def run_image(self):
         """Run docker container from built image
@@ -565,9 +597,7 @@ class Repo2Docker(Application):
 
         container_volumes = {}
         if self.volumes:
-            api_client = docker.APIClient(
-                version="auto", **docker.utils.kwargs_from_env()
-            )
+            api_client = self.docker_client()
             image = api_client.inspect_image(self.output_image_spec)
             image_workdir = image["ContainerConfig"]["WorkingDir"]
 
@@ -588,6 +618,10 @@ class Repo2Docker(Application):
 
         run_kwargs.update(self.extra_run_kwargs)
 
+        self.log.debug(
+            "Running container with image {}\n".format(self.output_image_spec),
+            extra=dict(phase="running"),
+        )
         container = client.containers.run(self.output_image_spec, **run_kwargs)
 
         while container.status == "created":
@@ -645,7 +679,7 @@ class Repo2Docker(Application):
         if self.dry_run:
             return False
         # check if we already have an image for this content
-        client = docker.APIClient(version="auto", **kwargs_from_env())
+        client = self.docker_client()
         for image in client.images():
             if image["RepoTags"] is not None:
                 for tag in image["RepoTags"]:
@@ -660,7 +694,7 @@ class Repo2Docker(Application):
         # Check if r2d can connect to docker daemon
         if not self.dry_run:
             try:
-                docker_client = docker.APIClient(version="auto", **kwargs_from_env())
+                self.docker_client()
             except DockerException as e:
                 self.log.error(
                     "\nDocker client initialization error: %s.\nCheck if docker is running on the host.\n",
@@ -744,7 +778,7 @@ class Repo2Docker(Application):
                     )
 
                     for l in picked_buildpack.build(
-                        docker_client,
+                        self.docker_client(),
                         self.output_image_spec,
                         self.build_memory_limit,
                         build_args,
@@ -760,6 +794,8 @@ class Repo2Docker(Application):
                             self.log.info(
                                 "Fetching base image...\r", extra=dict(phase="building")
                             )
+                        elif "image" in l:
+                            self.output_image_spec = l["image"]
                         else:
                             self.log.info(json.dumps(l), extra=dict(phase="building"))
 
@@ -773,6 +809,9 @@ class Repo2Docker(Application):
 
         if self.push:
             self.push_image()
+
+        if self.save:
+            self.save_image()
 
         if self.run:
             self.run_image()

@@ -8,3 +8,4 @@ from .docker import DockerBuildPack
 from .legacy import LegacyBinderDockerBuildPack
 from .r import RBuildPack
 from .nix import NixBuildPack
+from .tarball import TarballBuildPack
