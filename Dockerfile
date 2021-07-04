@@ -5,8 +5,7 @@ RUN apk add --no-cache git python3 python3-dev py-pip build-base
 
 # build wheels in first image
 ADD . /tmp/src
-# restore the hooks directory so that the repository isn't marked as dirty
-RUN cd /tmp/src && git clean -xfd && git checkout -- hooks && git status
+RUN cd /tmp/src && git clean -xfd && git status
 RUN mkdir /tmp/wheelhouse \
  && cd /tmp/wheelhouse \
  && pip3 install wheel \
