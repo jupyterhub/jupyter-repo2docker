@@ -1,5 +1,5 @@
 # AUTO GENERATED FROM environment.py-2.7.yml, DO NOT MANUALLY MODIFY
-# Frozen on 2021-02-22 12:21:22 UTC
+# Frozen on 2021-07-03 11:21:14 UTC
 name: r2d
 channels:
   - conda-forge
@@ -11,7 +11,7 @@ dependencies:
   - backports=1.0=py27_1
   - backports.shutil_get_terminal_size=1.0.0=py27_1
   - backports_abc=0.5=py27_0
-  - ca-certificates=2020.12.5=ha878542_0
+  - ca-certificates=2021.5.30=ha878542_0
   - certifi=2019.11.28=py27h8c360ce_1
   - configparser=3.7.3=py27h8c360ce_2
   - decorator=4.4.2=py_0
@@ -23,14 +23,14 @@ dependencies:
   - ipython_genutils=0.2.0=py27_0
   - jupyter_client=5.3.4=py27_1
   - jupyter_core=4.6.3=py27h8c360ce_1
-  - ld_impl_linux-64=2.35.1=hea4e1c9_2
+  - ld_impl_linux-64=2.36.1=hea4e1c9_0
   - libffi=3.2.1=he1b5a44_1007
-  - libgcc-ng=9.3.0=h2828fa1_18
-  - libgomp=9.3.0=h2828fa1_18
+  - libgcc-ng=9.3.0=h2828fa1_19
+  - libgomp=9.3.0=h2828fa1_19
   - libsodium=1.0.17=h516909a_0
-  - libstdcxx-ng=9.3.0=h6de172a_18
+  - libstdcxx-ng=9.3.0=h6de172a_19
   - ncurses=6.2=h58526e2_4
-  - openssl=1.1.1j=h7f98852_0
+  - openssl=1.1.1k=h7f98852_0
   - pathlib2=2.3.5=py27h8c360ce_1
   - pexpect=4.8.0=py27h8c360ce_1
   - pickleshare=0.7.5=py27h8c360ce_1001
@@ -42,13 +42,13 @@ dependencies:
   - python-dateutil=2.8.1=py_0
   - python_abi=2.7=1_cp27mu
   - pyzmq=19.0.0=py27h76efe43_1
-  - readline=8.0=he28a2e2_2
+  - readline=8.1=h46c0cb4_0
   - scandir=1.10.0=py27hdf8410d_1
   - setuptools=44.0.0=py27_0
   - simplegeneric=0.8.1=py27_0
-  - singledispatch=3.6.0=pyh44b312d_0
-  - six=1.15.0=pyh9f0ad1d_0
-  - sqlite=3.34.0=h74cdb3f_0
+  - singledispatch=3.6.1=pyh44b312d_0
+  - six=1.16.0=pyh6c4a22f_0
+  - sqlite=3.36.0=h9cd32fc_0
   - tk=8.6.10=hed695b0_1
   - tornado=5.1.1=py27h14c3975_1000
   - traitlets=4.3.3=py27h8c360ce_1

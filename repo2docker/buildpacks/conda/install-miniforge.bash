@@ -48,6 +48,9 @@ echo "installing notebook env:"
 cat /tmp/environment.yml
 time mamba env create -p ${NB_PYTHON_PREFIX} -f /tmp/environment.yml
 
+# Set NPM config
+${NB_PYTHON_PREFIX}/bin/npm config --global set prefix ${NPM_DIR}
+
 # empty conda history file,
 # which seems to result in some effective pinning of packages in the initial env,
 # which we don't intend.

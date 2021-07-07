@@ -1,7 +1,8 @@
 # AUTO GENERATED FROM environment.yml, DO NOT MANUALLY MODIFY
-# Generated on 2021-02-22 12:28:32 UTC
+# Generated on 2021-07-03 11:26:30 UTC
 dependencies:
 - python=3.9.*
+- nodejs=14
 - ipywidgets==7.6.3
 - jupyter-offlinenotebook==0.2.1
 - jupyter-resource-usage==0.5.1

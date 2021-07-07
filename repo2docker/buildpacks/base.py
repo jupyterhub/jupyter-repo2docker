@@ -52,11 +52,6 @@ RUN groupadd \
         --uid ${NB_UID} \
         ${NB_USER}
 
-RUN wget --quiet -O - https://deb.nodesource.com/gpgkey/nodesource.gpg.key |  apt-key add - && \
-    DISTRO="bionic" && \
-    echo "deb https://deb.nodesource.com/node_14.x $DISTRO main" >> /etc/apt/sources.list.d/nodesource.list && \
-    echo "deb-src https://deb.nodesource.com/node_14.x $DISTRO main" >> /etc/apt/sources.list.d/nodesource.list
-
 # Base package installs are not super interesting to users, so hide their outputs
 # If install fails for some reason, errors will still be printed
 RUN apt-get -qq update && \
@@ -247,7 +242,6 @@ class BuildPack:
         return {
             # Utils!
             "less",
-            "nodejs",
             "unzip",
         }
 
@@ -622,31 +616,7 @@ class BaseImage(BuildPack):
         """Return env directives required for build"""
         return [
             ("APP_BASE", "/srv"),
-            ("NPM_DIR", "${APP_BASE}/npm"),
-            ("NPM_CONFIG_GLOBALCONFIG", "${NPM_DIR}/npmrc"),
         ]
-
-    def get_path(self):
-        return super().get_path() + ["${NPM_DIR}/bin"]
-
-    def get_build_scripts(self):
-        scripts = [
-            (
-                "root",
-                r"""
-                mkdir -p ${NPM_DIR} && \
-                chown -R ${NB_USER}:${NB_USER} ${NPM_DIR}
-                """,
-            ),
-            (
-                "${NB_USER}",
-                r"""
-                npm config --global set prefix ${NPM_DIR}
-                """,
-            ),
-        ]
-
-        return super().get_build_scripts() + scripts
 
     def get_env(self):
         """Return env directives to be set after build"""
