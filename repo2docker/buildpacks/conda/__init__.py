@@ -163,7 +163,7 @@ class CondaBuildPack(BaseImage):
                 py_frozen_name = f"environment.py-{py_version}.lock"
                 if os.path.exists(os.path.join(HERE, py_frozen_name)):
                     frozen_name = py_frozen_name
-                    pip_frozen_name = f"requirements.py-{py_version}.txt"
+                    pip_frozen_name = f"requirements.py-{py_version}.pip"
                 if not frozen_name:
                     self.log.warning(f"No frozen env for {py_version}")
         files[
