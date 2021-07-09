@@ -5,7 +5,7 @@ alembic==1.0.3
 async-generator==1.10
 chardet==3.0.4
 idna==2.7
-jupyterhub==0.9.4
+jupyterhub==0.9.6
 mako==1.0.7
 notebook==5.7.8
 nteract-on-jupyter==1.9.6
