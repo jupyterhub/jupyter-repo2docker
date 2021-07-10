@@ -35,6 +35,7 @@ from .buildpacks import (
     PipfileBuildPack,
     PythonBuildPack,
     RBuildPack,
+    GuixBuildPack,
 )
 from . import contentproviders
 from .engine import BuildError, ContainerEngineException, ImageLoadError
@@ -94,6 +95,7 @@ class Repo2Docker(Application):
             JuliaProjectTomlBuildPack,
             JuliaRequireBuildPack,
             NixBuildPack,
+            GuixBuildPack,
             RBuildPack,
             CondaBuildPack,
             PipfileBuildPack,
