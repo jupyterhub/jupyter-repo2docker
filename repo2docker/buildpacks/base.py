@@ -27,18 +27,18 @@ RUN apt-get -qq update && \
 RUN echo "en_US.UTF-8 UTF-8" > /etc/locale.gen && \
     locale-gen
 
-ENV LC_ALL en_US.UTF-8
-ENV LANG en_US.UTF-8
-ENV LANGUAGE en_US.UTF-8
+ENV LC_ALL=en_US.UTF-8 \
+    LANG=en_US.UTF-8 \
+    LANGUAGE=en_US.UTF-8
 
 # Use bash as default shell, rather than sh
-ENV SHELL /bin/bash
+ENV SHELL=/bin/bash
 
 # Set up user
 ARG NB_USER
 ARG NB_UID
-ENV USER ${NB_USER}
-ENV HOME /home/${NB_USER}
+ENV USER=${NB_USER} \
+    HOME=/home/${NB_USER}
 
 RUN groupadd \
         --gid ${NB_UID} \
@@ -86,13 +86,13 @@ EXPOSE 8888
 {% if build_env -%}
 # Environment variables required for build
 {% for item in build_env -%}
-ENV {{item[0]}} {{item[1]}}
+ENV {{item[0]}}={{item[1]}}
 {% endfor -%}
 {% endif -%}
 
 {% if path -%}
 # Special case PATH
-ENV PATH {{ ':'.join(path) }}:${PATH}
+ENV PATH={{ ':'.join(path) }}:${PATH}
 {% endif -%}
 
 {% if build_script_files -%}
@@ -108,7 +108,15 @@ COPY --chown={{ user }}:{{ user }} {{ src }} {{ dst }}
 
 # Allow target path repo is cloned to be configurable
 ARG REPO_DIR=${HOME}
-ENV REPO_DIR ${REPO_DIR}
+ENV REPO_DIR=${REPO_DIR}
+RUN if [ ! -d "${REPO_DIR}" ] \
+    ; then \
+        mkdir -p "${REPO_DIR}" \
+        && chown -R ${NB_USER}:${NB_USER} "${REPO_DIR}" \
+    ; else \
+        echo "${REPO_DIR} already exists..." \
+    ; fi
+
 WORKDIR ${REPO_DIR}
 RUN chown ${NB_USER}:${NB_USER} ${REPO_DIR}
 
@@ -120,12 +128,12 @@ RUN chown ${NB_USER}:${NB_USER} ${REPO_DIR}
 #
 # The XDG standard suggests ~/.local/bin as the path for local user-specific
 # installs. See https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
-ENV PATH ${HOME}/.local/bin:${REPO_DIR}/.local/bin:${PATH}
+ENV PATH=${HOME}/.local/bin:${REPO_DIR}/.local/bin:${PATH}
 
 {% if env -%}
 # The rest of the environment
 {% for item in env -%}
-ENV {{item[0]}} {{item[1]}}
+ENV {{item[0]}}={{item[1]}}
 {% endfor -%}
 {% endif -%}
 
@@ -145,7 +153,7 @@ COPY --chown={{ user }}:{{ user }} src/{{ src }} ${REPO_DIR}/{{ dst }}
 {% endfor %}
 
 # Copy stuff.
-COPY --chown={{ user }}:{{ user }} src/ ${REPO_DIR}
+COPY --chown={{ user }}:{{ user }} src/ ${REPO_DIR}/
 
 # Run assemble scripts! These will actually turn the specification
 # in the repository into an image.
@@ -174,7 +182,7 @@ RUN ./{{ s }}
 # Add start script
 {% if start_script is not none -%}
 RUN chmod +x "{{ start_script }}"
-ENV R2D_ENTRYPOINT "{{ start_script }}"
+ENV R2D_ENTRYPOINT="{{ start_script }}"
 {% endif -%}
 
 # Add entrypoint

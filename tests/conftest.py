@@ -1,11 +1,19 @@
 """
 Custom test collector for our integration tests.
 
-Each directory that has a script named 'verify' is considered
-a test. jupyter-repo2docker is run on that directory,
-and then ./verify is run inside the built container. It should
-return a non-zero exit code for the test to be considered a
-success.
+
+Test lifecycle:
+- Find all directories that contain `verify` or `*.repos.yaml`
+- If `verify` is found:
+    - Run `jupyter-repo2docker` on the test directory.
+      - Extra arguments may be added as YAML list of strings in `extra-args.yaml`.
+    - Run `./verify` inside the built container.
+    - It should return a non-zero exit code for the test to be considered a
+      successful.
+- If a `*.repos.yaml` is found:
+    - For each entry of the form `{name, url, ref, verify}`
+        - Run `jupyter-repo2docker` with the `url` and `ref`
+        - Run the `verify` inside the built container
 """
 
 import os
