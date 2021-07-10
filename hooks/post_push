@@ -1,8 +1,0 @@
-#!/bin/bash
-
-# when building jupyter/repo2docker:master
-# also push jupyter/repo2docker:1.2.3-3.abcd1234 (replace + with -)
-version=$(docker run $DOCKER_REPO:$DOCKER_TAG jupyter-repo2docker --version | sed s@+@-@)
-VERSION_IMAGE="$DOCKER_REPO:$version"
-docker tag $DOCKER_REPO:$DOCKER_TAG "$VERSION_IMAGE"
-docker push "$VERSION_IMAGE"
