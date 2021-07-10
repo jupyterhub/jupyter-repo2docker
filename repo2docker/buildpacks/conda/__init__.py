@@ -113,7 +113,7 @@ class CondaBuildPack(BaseImage):
                 r"""
                 TIMEFORMAT='time: %3R' \
                 bash -c 'time /tmp/install-base-env.bash' && \
-                rm /tmp/install-base-env.bash /tmp/environment.yml
+                rm -rf /tmp/install-base-env.bash /tmp/env
                 """,
             )
         ]
