@@ -5,6 +5,6 @@ from subprocess import check_output
 assert sys.version_info[:2] == (3, 5), sys.version
 
 out = check_output(["/tmp/bin/micromamba", "--version"]).decode("utf8").strip()
-assert out == "21.5.31.1722", out
+assert out == "0.15.0", out
 
 import numpy
