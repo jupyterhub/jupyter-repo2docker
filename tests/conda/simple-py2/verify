@@ -14,13 +14,17 @@ assert sorted(specs) == ["python2", "python3"], specs.keys()
 import json
 from subprocess import check_output
 
-envs = json.loads(check_output(["conda", "env", "list", "--json"]).decode("utf8"))
+envs = json.loads(
+    check_output(["/tmp/bin/micromamba", "env", "list", "--json"]).decode("utf8")
+)
 assert envs == {
     "envs": ["/srv/conda", "/srv/conda/envs/kernel", "/srv/conda/envs/notebook"]
 }, envs
 
 pkgs = json.loads(
-    check_output(["conda", "list", "-n", "kernel", "--json"]).decode("utf8")
+    check_output(["/tmp/bin/micromamba", "list", "-n", "kernel", "--json"]).decode(
+        "utf8"
+    )
 )
 pkg_names = [pkg["name"] for pkg in pkgs]
 assert "ipykernel" in pkg_names, pkg_names

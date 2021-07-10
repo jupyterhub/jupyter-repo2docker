@@ -4,7 +4,7 @@ from subprocess import check_output
 
 assert sys.version_info[:2] == (3, 5), sys.version
 
-out = check_output(["conda", "--version"]).decode("utf8").strip()
-assert out == "conda 4.9.2", out
+out = check_output(["/tmp/bin/micromamba", "--version"]).decode("utf8").strip()
+assert out == "0.15.0", out
 
 import numpy
