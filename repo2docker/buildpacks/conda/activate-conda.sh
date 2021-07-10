@@ -1,3 +1,4 @@
+#!/bin/bash -x
 # enable conda and activate the notebook environment
 CONDA_PROFILE="${CONDA_DIR}/etc/profile.d/conda.sh"
 test -f $CONDA_PROFILE && . $CONDA_PROFILE
@@ -14,5 +15,8 @@ if [[ "${KERNEL_PYTHON_PREFIX}" != "${NB_PYTHON_PREFIX}" ]]; then
     # which only contains UI when the two are different
     export CONDA_DEFAULT_ENV="${KERNEL_PYTHON_PREFIX}"
 else
-    conda activate ${NB_PYTHON_PREFIX}
+    CONDA_DEFAULT_ENV=${NB_PYTHON_PREFIX}
 fi
+
+echo "Activating default conda environment ${CONDA_DEFAULT_ENV}"
+conda activate ${CONDA_DEFAULT_ENV}

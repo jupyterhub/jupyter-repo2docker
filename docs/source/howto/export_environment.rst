@@ -60,7 +60,7 @@ you need and then perform a strict export of the environment.
 #. open a terminal by clicking "New -> Terminal" next to the "Upload" button on the
    right hand side of the webpage
 #. install the packages your project requires with ``conda install <yourpackages>``
-#. use ``conda env export -n root`` to print the environment
+#. use ``conda env export`` to print the environment
 #. copy and paste the environment you just printed into a ``environment.yml`` in
    your projects repository
 #. close your browser tabs and exit the repo2docker session by pressing Ctrl-C.
