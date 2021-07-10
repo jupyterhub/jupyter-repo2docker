@@ -165,6 +165,18 @@ It uses a ``postBuild`` file in a folder called ``binder`` to `prepare
 their demo for binder <https://github.com/jupyterlab/jupyterlab-demo/blob/master/binder/postBuild>`_.
 
 
+.. _postBuildAdmin:
+
+``postBuildAdmin`` - Run code after installing the environment
+==============================================================
+
+A script that can contain arbitrary commands to be run as root after the whole repository has been built. If you
+want this to be a shell script, make sure the first line is ``#!/bin/bash``.
+
+Note that by default the build will not be stopped if an error occurs inside a shell script.
+You should include ``set -e`` or the equivalent at the start of the script to avoid errors being silently ignored.
+
+
 .. _start:
 
 ``start`` - Run code before the user sessions starts

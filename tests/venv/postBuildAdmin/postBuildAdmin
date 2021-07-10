@@ -1,0 +1,3 @@
+#!/bin/bash
+
+touch /chucknorris_was_here

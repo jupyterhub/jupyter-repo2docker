@@ -160,6 +160,16 @@ COPY --chown={{ user }}:{{ user }} src/ ${REPO_DIR}
 LABEL {{k}}="{{v}}"
 {%- endfor %}
 
+{% if post_build_admin_scripts -%}
+# Switch to root (preassemble_script_directives might switch to $NB_USER)
+USER root
+# Make sure that postBuildAdmin scripts are marked executable before executing them
+{% for s in post_build_admin_scripts -%}
+RUN chmod +x {{ s }}
+RUN ./{{ s }}
+{% endfor %}
+{% endif -%}
+
 # We always want containers to run as non-root
 USER ${NB_USER}
 
@@ -407,6 +417,19 @@ class BuildPack:
         """
         return []
 
+    def get_post_build_admin_scripts(self):
+        """
+        An ordered list of executable scripts to execute after build
+        as root.
+
+        Is run as a root, and must be executable. Used for performing
+        build time steps that can not be performed with standard tools.
+
+        The scripts should be as deterministic as possible - running it twice
+        should not produce different results!
+        """
+        return []
+
     def get_start_script(self):
         """
         The path to a script to be executed at container start up.
@@ -512,6 +535,7 @@ class BuildPack:
             build_script_files=build_script_files,
             base_packages=sorted(self.get_base_packages()),
             post_build_scripts=self.get_post_build_scripts(),
+            post_build_admin_scripts=self.get_post_build_admin_scripts(),
             start_script=self.get_start_script(),
             appendix=self.appendix,
             # For docker 17.09 `COPY --chown`, 19.03 would allow using $NBUSER
@@ -703,6 +727,12 @@ class BaseImage(BuildPack):
         post_build = self.binder_path("postBuild")
         if os.path.exists(post_build):
             return [post_build]
+        return []
+
+    def get_post_build_admin_scripts(self):
+        post_build_admin = self.binder_path("postBuildAdmin")
+        if os.path.exists(post_build_admin):
+            return [post_build_admin]
         return []
 
     def get_start_script(self):
