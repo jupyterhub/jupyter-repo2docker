@@ -582,6 +582,7 @@ class Repo2Docker(Application):
                 "--port",
                 port,
                 "--NotebookApp.custom_display_url=http://{}:{}".format(host_name, port),
+                "--NotebookApp.default_url=/doc",
             ]
             ports = {"%s/tcp" % port: port}
         else:
