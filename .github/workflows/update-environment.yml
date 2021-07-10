@@ -1,0 +1,53 @@
+name: Update Environments
+
+on:
+  # TODO: These triggers are just for testing the workflow
+  # Change this to only run on new issues that contain a trigger string
+  push:
+  pull_request:
+  # issues:
+  #   types:
+  #     - opened
+
+# Global environment variables
+env:
+  GIT_COMMITTER_EMAIL: repo2docker-update-bot@github.local
+  GIT_COMMITTER_NAME: repo2docker-update-bot
+  GIT_AUTHOR_EMAIL: repo2docker-update-bot@github.local
+  GIT_AUTHOR_NAME: repo2docker-update-bot
+
+jobs:
+  update-environment:
+    runs-on: ubuntu-18.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      # Action Repo: https://github.com/actions/setup-python
+      - name: Setup Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: "3.8"
+
+      - name: Install dependencies
+        run: pip install packaging ruamel.yaml
+
+      - name: Update repo2docker environment.yml
+        run: python repo2docker/buildpacks/conda/update.py
+
+      - name: Check if environment.yml changed
+        run: |
+          if ! git diff --exit-code; then
+            echo "::set-env name=ENVIRONMENT_YML_CHANGED::yes"
+          fi
+
+      - name: Freeze repo2docker environments
+        run: |
+          python repo2docker/buildpacks/conda/freeze.py
+          git diff
+          git add repo2docker/buildpacks/conda/*.yml
+          git commit -m 'Update conda/environment*.yml'
+          # TODO: push a branch, open a PR
+        if: ${{ env.ENVIRONMENT_YML_CHANGED == 'yes' }}
